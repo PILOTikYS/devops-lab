@@ -14,3 +14,5 @@ for svc in "$@"; do
     echo "$NOW - $svc: Не запущен" >> /var/log/check_services.log
   fi
 done
+
+df -h /
