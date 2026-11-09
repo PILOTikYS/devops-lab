@@ -1,14 +1,15 @@
-services = [
-    {"name": "nginx", "expected_status": "running"},
-    {"name": "ssh", "expected_status": "running"},
-    {"name": "cron", "expected_status": "stopped"}
-]
+import sys
+import subprocess
+
+services = sys.argv[1:]
+
+if len(sys.argv) < 2:
+    print("Usage: python3 api_check.py <service1> <service2>")
+    sys.exit(1)  # Останавливаем скрипт с кодом ошибки
 
 for svc in services:
-    service_name = svc["name"]
-    expected = svc["expected_status"]
-    real_status = "running"
-    if expected == real_status:
-        print(f"[OK] Сервис {service_name} работает!")
+    result = subprocess.run(["systemctl", "is-active", "--quiet", svc], capture_output=True, text=True)
+    if result.returncode == 0:
+        print(f"[OK] Сервис {svc} работает!")
     else:
-        print(f"[FAIL] Сервис {service_name} должен быть {expected}, но он {real_status}!")
+        print(f"[FAIL] Сервис {svc} не работает!")
